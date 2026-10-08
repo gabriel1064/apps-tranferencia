@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+ROOT="$HOME/.local/opt/nemo-layer"
+export LD_LIBRARY_PATH="$ROOT/lib:${LD_LIBRARY_PATH:-}"
+export GI_TYPELIB_PATH="$ROOT/lib/girepository-1.0:${GI_TYPELIB_PATH:-}"
+export XDG_DATA_DIRS="$ROOT/share:${XDG_DATA_DIRS:-/usr/share}"
+exec "$ROOT/bin/nemo-desktop" "$@"

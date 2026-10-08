@@ -1,0 +1,300 @@
+[
+  {
+    "name": "niri-apps",
+    "layer": "bottom",
+    "position": "bottom",
+    "height": 1,
+    "width": 1,
+    "margin-bottom": 0,
+    "margin-left": 0,
+    "margin-right": 0,
+    "spacing": 0,
+    "exclusive": false,
+    "passthrough": true,
+    "reload_style_on_change": true,
+
+    "modules-left": [
+      "custom/niri-rail"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "custom/niri-watch"
+    ],
+
+    "custom/niri-rail": {
+      "exec": "~/.config/waybar/scripts/niri-rail.py",
+      "return-type": "json",
+      "format": "",
+      "tooltip": false
+    },
+
+    "custom/niri-watch": {
+      "exec": "~/.config/waybar/scripts/niri-strip.sh",
+      "return-type": "json",
+      "format": "",
+      "tooltip": false
+    },
+
+    "group/niri-top": {
+      "orientation": "vertical",
+      "modules": [
+        "group/niri-apps",
+        "group/niri-strip"
+      ]
+    },
+
+    "group/niri-strip": {
+      "orientation": "horizontal",
+      "modules": [
+        "custom/niri-seg0",
+        "custom/niri-seg1",
+        "custom/niri-seg2",
+        "custom/niri-seg3",
+        "custom/niri-seg4",
+        "custom/niri-seg5",
+        "custom/niri-seg6",
+        "custom/niri-seg7",
+        "custom/niri-seg8",
+        "custom/niri-seg9"
+      ]
+    },
+
+    "group/niri-apps": {
+      "orientation": "horizontal",
+      "modules": [
+        "custom/niri-app0",
+        "custom/niri-app1",
+        "custom/niri-app2",
+        "custom/niri-app3",
+        "custom/niri-app4",
+        "custom/niri-app5",
+        "custom/niri-app6",
+        "custom/niri-app7",
+        "custom/niri-app8",
+        "custom/niri-app9"
+      ]
+    },
+
+    "custom/niri-seg0": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 0",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 0",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 0",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 0",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 0",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 0"
+    },
+    "custom/niri-seg1": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 1",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 1",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 1",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 1",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 1",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 1"
+    },
+    "custom/niri-seg2": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 2",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 2",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 2",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 2",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 2",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 2"
+    },
+    "custom/niri-seg3": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 3",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 3",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 3",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 3",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 3",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 3"
+    },
+    "custom/niri-seg4": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 4",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 4",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 4",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 4",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 4",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 4"
+    },
+    "custom/niri-seg5": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 5",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 5",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 5",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 5",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 5",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 5"
+    },
+    "custom/niri-seg6": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 6",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 6",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 6",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 6",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 6",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 6"
+    },
+    "custom/niri-seg7": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 7",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 7",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 7",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 7",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 7",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 7"
+    },
+    "custom/niri-seg8": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 8",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 8",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 8",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 8",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 8",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 8"
+    },
+    "custom/niri-seg9": {
+      "exec": "~/.config/waybar/scripts/niri-seg-slot.sh 9",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 9",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 9",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 9",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 9",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 9"
+    },
+
+    "custom/niri-app0": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 0",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 0",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 0",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 0",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 0",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 0"
+    },
+    "custom/niri-app1": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 1",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 1",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 1",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 1",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 1",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 1"
+    },
+    "custom/niri-app2": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 2",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 2",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 2",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 2",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 2",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 2"
+    },
+    "custom/niri-app3": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 3",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 3",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 3",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 3",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 3",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 3"
+    },
+    "custom/niri-app4": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 4",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 4",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 4",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 4",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 4",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 4"
+    },
+    "custom/niri-app5": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 5",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 5",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 5",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 5",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 5",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 5"
+    },
+    "custom/niri-app6": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 6",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 6",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 6",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 6",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 6",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 6"
+    },
+    "custom/niri-app7": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 7",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 7",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 7",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 7",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 7",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 7"
+    },
+    "custom/niri-app8": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 8",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 8",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 8",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 8",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 8",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 8"
+    },
+    "custom/niri-app9": {
+      "exec": "~/.config/waybar/scripts/niri-app-slot.sh 9",
+      "return-type": "json",
+      "hide-empty-text": true,
+      "tooltip": true,
+      "on-click": "~/.config/waybar/scripts/niri-app-action.sh focus 9",
+      "on-click-middle": "~/.config/waybar/scripts/niri-app-action.sh move-left 9",
+      "on-click-right": "~/.config/waybar/scripts/niri-app-action.sh move-right 9",
+      "on-scroll-up": "~/.config/waybar/scripts/niri-app-action.sh move-left 9",
+      "on-scroll-down": "~/.config/waybar/scripts/niri-app-action.sh move-right 9"
+    }
+  }
+]

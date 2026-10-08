@@ -1,0 +1,244 @@
+* {
+  border: none;
+  border-radius: 0;
+  /* CaskaydiaCove = Cascadia + Nerd Fonts com métricas de ícone corretas;
+     Cascadia Mono NF encolhe vários glyphs Material/Nerd. */
+  font-family: "CaskaydiaCove Nerd Font", "CaskaydiaCove Nerd Font Propo", "Cascadia Mono NF", "Cascadia Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 0;
+}
+
+window#waybar {
+  background: transparent;
+  color: #e8eaed;
+}
+
+/* Pills — só nos módulos; gap vem do "spacing" da config (evita margem dupla) */
+#clock,
+#cpu,
+#memory,
+#network,
+#bluetooth,
+#custom-bluetooth,
+#battery,
+#custom-bar-hide,
+#tray,
+#custom-gpu-intel,
+#custom-gpu-nvidia,
+#custom-media,
+#custom-volume,
+#group-workspaces {
+  background: rgba(18, 20, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  padding: 2px 12px;
+  margin: 0;
+  color: #e8eaed;
+}
+
+/* Ícones só — padding óptico; tamanho alinhado aos demais após CaskaydiaCove */
+#network,
+#custom-bluetooth {
+  min-width: 0;
+  min-height: 0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+#custom-bluetooth {
+  padding: 5px 12px 5px 10px;
+}
+
+#custom-bar-hide {
+  padding: 2px 10px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Wi‑Fi (Nerd Font): glyph sobe e puxa à direita — compensação óptico */
+#network {
+  padding: 5px 13px 5px 9px;
+}
+
+#network label,
+#custom-bluetooth label {
+  padding: 0;
+  margin: 0;
+}
+
+#network.disconnected,
+#network.disabled {
+  color: #9aa0a6;
+}
+
+#custom-bluetooth.off {
+  color: #9aa0a6;
+}
+
+#custom-bluetooth.connected {
+  color: #7ec8ff;
+}
+
+#custom-gpu-intel,
+#custom-gpu-nvidia {
+  padding: 2px 10px;
+  min-width: 0;
+}
+
+#custom-media {
+  padding: 2px 10px;
+  min-width: 18px;
+}
+
+#custom-volume {
+  padding: 2px 12px;
+  min-width: 0;
+}
+
+#custom-volume.muted {
+  color: #9aa0a6;
+}
+
+#custom-ws1.hidden,
+#custom-ws2.hidden,
+#custom-ws3.hidden,
+#custom-ws4.hidden,
+#custom-ws5.hidden,
+#custom-ws6.hidden,
+#custom-ws7.hidden,
+#custom-ws8.hidden,
+#custom-ws9.hidden,
+#custom-ws10.hidden {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  min-width: 0;
+}
+
+#custom-media.playing {
+  background: rgba(22, 28, 24, 0.78);
+  border-color: rgba(120, 200, 140, 0.28);
+}
+
+#custom-media.paused {
+  opacity: 0.85;
+}
+
+#group-workspaces {
+  padding: 2px 6px;
+}
+
+/* Inner workspace chips */
+#custom-ws1,
+#custom-ws2,
+#custom-ws3,
+#custom-ws4,
+#custom-ws5,
+#custom-ws6,
+#custom-ws7,
+#custom-ws8,
+#custom-ws9,
+#custom-ws10 {
+  background: rgba(0, 0, 0, 0.45);
+  color: #d7dbe0;
+  border: none;
+  border-radius: 999px;
+  padding: 0 8px;
+  margin: 1px 2px;
+  min-width: 22px;
+}
+
+#custom-ws1.active,
+#custom-ws2.active,
+#custom-ws3.active,
+#custom-ws4.active,
+#custom-ws5.active,
+#custom-ws6.active,
+#custom-ws7.active,
+#custom-ws8.active,
+#custom-ws9.active,
+#custom-ws10.active {
+  background: rgba(210, 214, 220, 0.88);
+  color: #111318;
+}
+
+#custom-ws1.occupied,
+#custom-ws2.occupied,
+#custom-ws3.occupied,
+#custom-ws4.occupied,
+#custom-ws5.occupied,
+#custom-ws6.occupied,
+#custom-ws7.occupied,
+#custom-ws8.occupied,
+#custom-ws9.occupied,
+#custom-ws10.occupied {
+  color: #f0f2f5;
+}
+
+#custom-ws1:hover,
+#custom-ws2:hover,
+#custom-ws3:hover,
+#custom-ws4:hover,
+#custom-ws5:hover,
+#custom-ws6:hover,
+#custom-ws7:hover,
+#custom-ws8:hover,
+#custom-ws9:hover,
+#custom-ws10:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#custom-ws-new {
+  background: rgba(0, 0, 0, 0.35);
+  color: #c8cdd3;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  /* Glyph "+" da mono puxa à esquerda — padding óptico assimétrico */
+  padding: 1px 7px 1px 7px;
+  margin: 1px 2px 1px 4px;
+  min-width: 22px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#custom-ws-new:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #f0f2f5;
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+#battery.warning {
+  color: #f0c674;
+}
+
+#battery.critical {
+  color: #ff6b6b;
+  animation: blink 1s infinite;
+}
+
+#tray menu {
+  background: rgba(22, 24, 28, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+tooltip {
+  background: rgba(18, 20, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #e8eaed;
+}
+
+tooltip label {
+  color: #e8eaed;
+  padding: 4px 6px;
+}
+
+@keyframes blink {
+  50% { opacity: 0.45; }
+}

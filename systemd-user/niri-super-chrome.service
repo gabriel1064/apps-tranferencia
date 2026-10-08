@@ -1,0 +1,14 @@
+[Unit]
+Description=Watch Super key for Niri window chrome overlay
+PartOf=graphical-session.target
+After=niri.service niri-window-chrome.service graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.local/bin/niri-super-chrome-watcher.py
+Restart=on-failure
+RestartSec=2
+SyslogIdentifier=niri-super-chrome
+
+[Install]
+WantedBy=niri.service

@@ -1,0 +1,15 @@
+[Unit]
+Description=Niri Mac-style window chrome overlay (Quickshell)
+PartOf=graphical-session.target
+After=niri.service graphical-session.target
+# Overlay only — does not replace noctalia/waybar.
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/niri-window-chrome
+Restart=on-failure
+RestartSec=2
+SyslogIdentifier=niri-window-chrome
+
+[Install]
+WantedBy=niri.service

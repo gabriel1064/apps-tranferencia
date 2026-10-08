@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Arranca o niri com live-reflow (fork). Usar no TTY, depois de sair do niri da distro.
+set -euo pipefail
+
+BIN="${NIRI_LIVE_BIN:-$HOME/.local/bin/niri-live-reflow}"
+
+if [[ ! -x "$BIN" ]]; then
+  echo "Binário em falta: $BIN" >&2
+  exit 1
+fi
+
+distro_pid="$(pgrep -u "$(id -u)" -x niri | head -n1 || true)"
+if [[ -n "${distro_pid}" ]]; then
+  echo "O niri da distro ainda está a correr (pid ${distro_pid})." >&2
+  echo "Sai dele: Super+Shift+E  (confirma com Enter)" >&2
+  echo "No prompt do tty1 corre:  fork-niri" >&2
+  exit 1
+fi
+
+echo "A arrancar $($BIN --version 2>/dev/null | head -n1)"
+exec "$BIN" "$@"

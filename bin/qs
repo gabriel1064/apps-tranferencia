@@ -1,0 +1,20 @@
+#!/bin/bash
+# Quickshell na Intel (barra leve) — usa o binário do sistema (pacman),
+# não o tree desatualizado em ~/.local/opt/quickshell-root.
+unset __NV_PRIME_RENDER_OFFLOAD
+unset __VK_LAYER_NV_optimus
+unset VK_ICD_FILENAMES
+unset GBM_BACKEND
+unset NVD_BACKEND
+# Não herdar libs Qt velhas do opt/
+unset LD_LIBRARY_PATH
+unset QML2_IMPORT_PATH
+unset QML_IMPORT_PATH
+unset QT_PLUGIN_PATH
+
+export __EGL_VENDOR_LIBRARY_FILENAMES="/usr/share/glvnd/egl_vendor.d/50_mesa.json"
+export __GLX_VENDOR_LIBRARY_NAME="mesa"
+export LIBVA_DRIVER_NAME="iHD"
+export MESA_LOADER_DRIVER_OVERRIDE="iris"
+
+exec /usr/bin/quickshell "$@"

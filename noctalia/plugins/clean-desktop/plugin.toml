@@ -1,0 +1,13 @@
+id          = "gabriel/clean-desktop"
+name        = "Clean desktop"
+version     = "1.0.0"
+plugin_api  = 3
+author      = "gabriel"
+license     = "MIT"
+icon        = "wallpaper"
+description = "Toggle niri show-desktop (hide every window of the focused workspace) and show its state."
+dependencies = ["niri"]
+
+[[widget]]
+id    = "toggle"
+entry = "widget.luau"

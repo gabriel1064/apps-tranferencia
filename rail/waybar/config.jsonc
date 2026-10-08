@@ -1,0 +1,225 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "margin-top": 8,
+  "margin-left": 12,
+  "margin-right": 12,
+  "spacing": 8,
+  "reload_style_on_change": true,
+
+  "modules-left": [
+    "clock"
+  ],
+  "modules-center": [
+    "group/workspaces"
+  ],
+  "modules-right": [
+    "custom/gpu-intel",
+    "custom/gpu-nvidia",
+    "cpu",
+    "memory",
+    "network",
+    "custom/bluetooth",
+    "battery",
+    "custom/bar-hide"
+  ],
+
+  "clock": {
+    "interval": 1,
+    "format": "  {:%H:%M:%S %p}",
+    "tooltip-format": "{:%A, %d de %B de %Y}"
+  },
+
+  "group/workspaces": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/ws1",
+      "custom/ws2",
+      "custom/ws3",
+      "custom/ws4",
+      "custom/ws5",
+      "custom/ws6",
+      "custom/ws7",
+      "custom/ws8",
+      "custom/ws9",
+      "custom/ws10",
+      "custom/ws-new"
+    ]
+  },
+
+  "custom/ws1": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 1",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 1",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws2": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 2",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 2",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws3": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 3",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 3",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws4": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 4",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 4",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws5": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 5",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 5",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws6": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 6",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 6",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws7": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 7",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 7",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws8": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 8",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 8",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws9": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 9",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 9",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws10": {
+    "exec": "~/.config/waybar/scripts/ws-status.sh 10",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/ws-focus.sh 10",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": true
+  },
+  "custom/ws-new": {
+    "format": "+",
+    "tooltip-format": "Nova área de trabalho",
+    "on-click": "~/.config/waybar/scripts/ws-new.sh"
+  },
+
+  "custom/gpu-intel": {
+    "exec": "~/.config/waybar/scripts/gpu-intel.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": true,
+    "on-click": "~/.config/waybar/scripts/open-perf.sh"
+  },
+
+  "custom/gpu-nvidia": {
+    "exec": "~/.config/waybar/scripts/gpu-nvidia.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": true,
+    "on-click": "~/.config/waybar/scripts/open-perf.sh"
+  },
+
+  "cpu": {
+    "interval": 3,
+    "format": "  {usage}%",
+    "tooltip": true,
+    "on-click": "~/.config/waybar/scripts/open-perf.sh"
+  },
+
+  "memory": {
+    "interval": 3,
+    "format": "  {used:0.1f}G / {total:0.1f}G",
+    "tooltip-format": "RAM {percentage}%",
+    "on-click": "~/.config/waybar/scripts/open-perf.sh"
+  },
+
+
+  "network": {
+    "interval": 5,
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰈀",
+    "format-linked": "󰈁",
+    "format-disconnected": "󰖪",
+    "format-disabled": "󰖪",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "tooltip-format-wifi": "{essid}\nSinal {signalStrength}% · {bandwidthDownBytes}\n{ipaddr}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+    "tooltip-format-disconnected": "Wi‑Fi / rede desconectada",
+    "on-click": "~/.config/waybar/scripts/wifi-manager.sh",
+    "on-click-right": "rfkill toggle wifi"
+  },
+
+  "custom/bluetooth": {
+    "exec": "~/.config/waybar/scripts/bt-status.sh",
+    "return-type": "json",
+    "interval": 5,
+    "tooltip": true,
+    "on-click": "blueman-manager",
+    "on-click-right": "bluetoothctl power toggle"
+  },
+
+  "battery": {
+    "interval": 5,
+    "states": {
+      "warning": 25,
+      "critical": 12
+    },
+    "format": "{icon}  {capacity}%",
+    "format-charging": "󰂄  {capacity}%",
+    "format-plugged": "󰚥  {capacity}%",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰁹"],
+    "tooltip-format": "{timeTo}, {capacity}%"
+  },
+
+  "custom/bar-hide": {
+    "format": "󰁝",
+    "tooltip-format": "Ocultar barra",
+    "on-click": "~/.config/waybar/scripts/bar-hide.sh"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  }
+}

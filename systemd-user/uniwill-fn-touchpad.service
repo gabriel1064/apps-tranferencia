@@ -1,0 +1,11 @@
+[Unit]
+Description=Uniwill Fn+F5 touchpad LED toggle (hidraw)
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/bin/uniwill-fn-touchpad-watcher.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

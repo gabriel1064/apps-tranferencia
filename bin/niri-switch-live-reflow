@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# Fecha o niri da sessão e arranca o fork live-reflow no mesmo TTY/serviço.
+set -euo pipefail
+
+NEW="${NIRI_LIVE_BIN:-$HOME/.local/bin/niri-live-reflow}"
+UNIT="niri-switch-live.service"
+LOG="${XDG_RUNTIME_DIR:-/tmp}/niri-switch-live-reflow.log"
+
+if [[ ! -x "$NEW" ]]; then
+  echo "Binário não encontrado: $NEW" >&2
+  exit 1
+fi
+
+niri_pids() {
+  pgrep -u "$(id -u)" -x niri || true
+}
+
+running_exe() {
+  local pid
+  pid="$(niri_pids | head -n1 || true)"
+  [[ -n "${pid}" ]] || return 1
+  readlink -f "/proc/${pid}/exe" 2>/dev/null || true
+}
+
+current="$(running_exe || true)"
+if [[ -n "${current}" ]] && [[ "${current}" == "$(readlink -f "$NEW")" ]]; then
+  echo "Já estás no niri live-reflow (${current})."
+  exit 0
+fi
+
+if [[ -z "$(niri_pids)" ]]; then
+  echo "Nenhum niri da distro a correr. A arrancar o fork…"
+  exec "$NEW"
+fi
+
+if ! command -v niri >/dev/null; then
+  echo "Não encontrei 'niri msg' no PATH." >&2
+  exit 1
+fi
+
+# Sessão via niri-session / niri.service: override + restart.
+if systemctl --user --quiet is-active niri.service; then
+  mkdir -p "${HOME}/.config/systemd/user/niri.service.d"
+  cat > "${HOME}/.config/systemd/user/niri.service.d/live-reflow.conf" <<EOF
+[Service]
+ExecStart=
+ExecStart=${NEW} --session
+EOF
+  systemctl --user daemon-reload
+  echo "A reiniciar niri.service com live-reflow…"
+  exec systemctl --user restart niri.service
+fi
+
+# Sessão TTY (login → bash → niri): o compositor tem de nascer fora da árvore
+# do niri atual, senão morre junto. systemd --user sobrevive ao quit.
+systemctl --user stop "${UNIT}" >/dev/null 2>&1 || true
+systemctl --user reset-failed "${UNIT}" >/dev/null 2>&1 || true
+
+tty_dev="$(readlink "/proc/$(niri_pids | head -n1)/fd/0" 2>/dev/null || true)"
+if [[ "${tty_dev}" != /dev/tty* ]]; then
+  tty_dev="/dev/tty1"
+fi
+
+echo "A agendar ${NEW} em ${tty_dev}…" | tee "$LOG"
+
+systemd-run --user \
+  --collect \
+  --unit="${UNIT}" \
+  --description="Arranca niri-live-reflow depois do niri atual sair" \
+  --property=Type=simple \
+  --property=KillMode=process \
+  --setenv=NIRI_LIVE_BIN="${NEW}" \
+  --setenv=NIRI_SWITCH_TTY="${tty_dev}" \
+  --setenv=NIRI_SWITCH_LOG="${LOG}" \
+  /bin/bash -c '
+    set -euo pipefail
+    exec >>"${NIRI_SWITCH_LOG}" 2>&1
+    echo "$(date -Iseconds) à espera que o niri distro saia"
+    for _ in $(seq 1 150); do
+      if ! pgrep -u "$(id -u)" -x niri >/dev/null 2>&1; then
+        break
+      fi
+      sleep 0.1
+    done
+    if pgrep -u "$(id -u)" -x niri >/dev/null 2>&1; then
+      echo "timeout: niri ainda está a correr"
+      exit 1
+    fi
+    sleep 0.35
+    echo "$(date -Iseconds) a exec ${NIRI_LIVE_BIN} no ${NIRI_SWITCH_TTY}"
+    if [[ -e "${NIRI_SWITCH_TTY}" ]]; then
+      exec setsid -c "${NIRI_LIVE_BIN}" <>"${NIRI_SWITCH_TTY}" >&0 2>&0
+    else
+      exec "${NIRI_LIVE_BIN}"
+    fi
+  '
+
+sleep 0.25
+if ! systemctl --user --quiet is-active "${UNIT}"; then
+  echo "Falhou a agendar o arranque. Vê ${LOG}" >&2
+  systemctl --user status "${UNIT}" --no-pager >&2 || true
+  exit 1
+fi
+
+echo "A fechar o niri atual. O live-reflow deve aparecer a seguir."
+niri msg action quit --skip-confirmation

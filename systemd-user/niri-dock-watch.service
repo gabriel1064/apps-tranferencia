@@ -1,0 +1,16 @@
+[Unit]
+Description=Watch DRM hotplug and apply Niri dock outputs
+Documentation=file:///home/gabriel/.local/bin/niri-dock-watch
+PartOf=graphical-session.target
+After=niri.service graphical-session.target
+# Enabled for niri.service only (not Hyprland). spawn-at-startup also starts it.
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/niri-dock-watch
+Restart=on-failure
+RestartSec=2
+SyslogIdentifier=niri-dock-watch
+
+[Install]
+WantedBy=niri.service

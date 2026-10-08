@@ -1,0 +1,18 @@
+#!/bin/bash
+# Waybar = exceção Intel (barra leve)
+ROOT="${HOME}/.local/opt/waybar-root"
+export LD_LIBRARY_PATH="${ROOT}/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export GI_TYPELIB_PATH="${ROOT}/usr/lib/girepository-1.0${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
+export XDG_DATA_DIRS="${ROOT}/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
+
+unset __NV_PRIME_RENDER_OFFLOAD
+unset __VK_LAYER_NV_optimus
+unset VK_ICD_FILENAMES
+unset GBM_BACKEND
+unset NVD_BACKEND
+export __EGL_VENDOR_LIBRARY_FILENAMES="/usr/share/glvnd/egl_vendor.d/50_mesa.json"
+export __GLX_VENDOR_LIBRARY_NAME="mesa"
+export LIBVA_DRIVER_NAME="iHD"
+export MESA_LOADER_DRIVER_OVERRIDE="iris"
+
+exec "${ROOT}/usr/bin/waybar" "$@"

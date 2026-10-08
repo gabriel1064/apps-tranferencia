@@ -1,0 +1,382 @@
+#!/usr/bin/env bash
+# Niri laptop dock: se houver monitor externo físico, desliga eDP-1 e liga o externo.
+# Se não houver (e a tampa estiver aberta), religa eDP-1.
+# Também aponta render-drm-device para NVIDIA (dock) ou Intel (só laptop).
+# Troca de GPU só vale após reinício do niri — este script agenda o reexec.
+# No-op fora do Niri (Hyprland / sem socket). Idempotente.
+set -u
+
+DRY_RUN=0
+FORCE_REEXEC=0
+for arg in "${@:-}"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=1 ;;
+    --reexec-now) FORCE_REEXEC=1 ;;
+  esac
+done
+
+LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}"
+LOG_FILE="${LOG_DIR}/niri-dock.log"
+SET_GPU="${HOME}/.local/bin/niri-set-render-gpu"
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/niri/config.kdl"
+INTEL_RENDER='/dev/dri/by-path/pci-0000:00:02.0-render'
+NVIDIA_RENDER='/dev/dri/by-path/pci-0000:01:00.0-render'
+mkdir -p "$LOG_DIR"
+
+log() {
+  local msg="$*"
+  local ts
+  ts="$(date --iso-8601=seconds 2>/dev/null || date -Iseconds 2>/dev/null || date)"
+  printf '%s %s\n' "$ts" "$msg" >>"$LOG_FILE" 2>/dev/null || true
+  if command -v logger >/dev/null 2>&1; then
+    logger -t niri-dock-outputs -- "$msg" 2>/dev/null || true
+  fi
+}
+
+trim_log() {
+  if [[ -f "$LOG_FILE" ]]; then
+    local sz
+    sz="$(wc -c <"$LOG_FILE" 2>/dev/null || echo 0)"
+    if (( sz > 1048576 )); then
+      tail -n 200 "$LOG_FILE" >"${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+    fi
+  fi
+}
+
+niri_live() {
+  command -v niri >/dev/null 2>&1 || return 1
+  local sock uid
+  uid="$(id -u)"
+  if [[ -n "${NIRI_SOCKET:-}" && -S "${NIRI_SOCKET}" ]]; then
+    niri msg -j version >/dev/null 2>&1 && return 0
+  fi
+  shopt -s nullglob
+  local candidates=(/run/user/"${uid}"/niri*.sock)
+  shopt -u nullglob
+  local c
+  for c in "${candidates[@]}"; do
+    [[ -S "$c" ]] || continue
+    export NIRI_SOCKET="$c"
+    if niri msg -j version >/dev/null 2>&1; then
+      return 0
+    fi
+  done
+  unset NIRI_SOCKET
+  return 1
+}
+
+# External panel plugged into a DRM connector (works even before niri lists it).
+sysfs_has_external() {
+  local path status name
+  shopt -s nullglob
+  for path in /sys/class/drm/card*-*; do
+    [[ -f "$path/status" ]] || continue
+    name="$(basename "$path")"
+    [[ "$name" == *eDP* ]] && continue
+    [[ "$name" == *Writeback* ]] && continue
+    status="$(cat "$path/status" 2>/dev/null || true)"
+    if [[ "$status" == "connected" ]]; then
+      shopt -u nullglob
+      return 0
+    fi
+  done
+  shopt -u nullglob
+  return 1
+}
+
+current_render_target() {
+  sed -nE 's/^[[:space:]]*render-drm-device[[:space:]]+"([^"]+)".*/\1/p' "$CFG" 2>/dev/null | head -1
+}
+
+schedule_niri_reexec() {
+  # Restart compositor on the new render GPU. Safe to call multiple times.
+  local unit="niri-gpu-reexec.service"
+  systemctl --user stop "$unit" 2>/dev/null || true
+  systemctl --user reset-failed "$unit" 2>/dev/null || true
+  # Detach from the dying compositor: wait for socket, then start niri.service.
+  systemd-run --user --collect --unit="$unit" \
+    --description="Re-exec niri after render-GPU switch" \
+    bash -c '
+      set -u
+      uid="$(id -u)"
+      for _ in $(seq 1 80); do
+        shopt -s nullglob
+        socks=(/run/user/"$uid"/niri*.sock)
+        shopt -u nullglob
+        if [[ ${#socks[@]} -eq 0 ]]; then
+          break
+        fi
+        alive=0
+        for s in "${socks[@]}"; do
+          [[ -S "$s" ]] || continue
+          if NIRI_SOCKET="$s" niri msg -j version >/dev/null 2>&1; then
+            alive=1
+            break
+          fi
+        done
+        [[ "$alive" -eq 0 ]] && break
+        sleep 0.25
+      done
+      sleep 0.4
+      systemctl --user reset-failed niri.service 2>/dev/null || true
+      # Prefer the packaged session unit (uses live-reflow drop-in).
+      if systemctl --user start niri.service; then
+        logger -t niri-dock-outputs -- "niri.service started after GPU switch" 2>/dev/null || true
+        exit 0
+      fi
+      # Fallback: direct session helper.
+      if command -v niri-session >/dev/null 2>&1; then
+        exec niri-session
+      fi
+      exec /home/gabriel/.local/bin/niri-live-reflow --session
+    ' >/dev/null 2>&1 || true
+  log "scheduled $unit (GPU switch needs compositor restart)"
+}
+
+if ! niri_live; then
+  exit 0
+fi
+
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  LOCK="${XDG_RUNTIME_DIR:-/tmp}/niri-dock-outputs.lock"
+  exec 9>"$LOCK"
+  flock 9
+  sleep 0.2
+fi
+
+lid_closed=0
+shopt -s nullglob
+for lidf in /proc/acpi/button/lid/*/state; do
+  if grep -qi 'closed' "$lidf" 2>/dev/null; then
+    lid_closed=1
+  fi
+done
+shopt -u nullglob
+
+json="$(niri msg -j outputs 2>/dev/null || true)"
+text="$(niri msg outputs 2>/dev/null || true)"
+
+mapfile -t ACTIONS < <(
+  LID_CLOSED="$lid_closed" OUTPUTS_JSON="$json" OUTPUTS_TEXT="$text" python3 - <<'PY'
+import json, os, re, sys
+
+lid_closed = os.environ.get("LID_CLOSED", "0") == "1"
+raw = os.environ.get("OUTPUTS_JSON") or ""
+text = os.environ.get("OUTPUTS_TEXT") or ""
+
+VIRTUAL_RE = re.compile(
+    r"^(Virtual-|HEADLESS-|Meta-|winit)",
+    re.I,
+)
+INTERNAL_RE = re.compile(r"^eDP-", re.I)
+
+
+def is_virtual(name: str) -> bool:
+    return bool(VIRTUAL_RE.match(name or ""))
+
+
+def is_internal(name: str) -> bool:
+    return bool(INTERNAL_RE.match(name or ""))
+
+
+outputs = []  # list of dicts: name, internal, enabled
+
+def load_json(s: str):
+    data = json.loads(s)
+    items = []
+    if isinstance(data, dict):
+        iterable = data.values()
+    elif isinstance(data, list):
+        iterable = data
+    else:
+        return items
+    for o in iterable:
+        if not isinstance(o, dict):
+            continue
+        name = o.get("name") or ""
+        if not name or is_virtual(name):
+            continue
+        logical = o.get("logical")
+        enabled = logical is not None
+        items.append({"name": name, "internal": is_internal(name), "enabled": bool(enabled)})
+    return items
+
+def load_text(s: str):
+    items = []
+    blocks = re.split(r"\n(?=Output )", s.strip()) if s.strip() else []
+    for block in blocks:
+        m = re.search(r"Output\s+\".*?\"\s+\(([^)]+)\)", block)
+        if not m:
+            continue
+        name = m.group(1).strip()
+        if not name or is_virtual(name):
+            continue
+        disabled = re.search(r"(?m)^\s*Disabled\s*$", block) is not None
+        items.append({"name": name, "internal": is_internal(name), "enabled": not disabled})
+    return items
+
+try:
+    if raw.strip():
+        outputs = load_json(raw)
+except Exception:
+    outputs = []
+
+if not outputs and text.strip():
+    outputs = load_text(text)
+
+externals = [o for o in outputs if not o["internal"]]
+internals = [o for o in outputs if o["internal"]]
+has_external = len(externals) > 0
+
+actions = []
+if has_external:
+    for o in externals:
+        if not o["enabled"]:
+            actions.append(f"on {o['name']}")
+    for o in internals:
+        if o["enabled"]:
+            actions.append(f"off {o['name']}")
+else:
+    if not lid_closed:
+        for o in internals:
+            if not o["enabled"]:
+                actions.append(f"on {o['name']}")
+
+for a in actions:
+    print(a)
+print(f"#has_external={1 if has_external else 0}")
+PY
+)
+
+has_external=0
+ACTIONS_FILTERED=()
+for spec in "${ACTIONS[@]+"${ACTIONS[@]}"}"; do
+  if [[ "$spec" == \#has_external=* ]]; then
+    has_external="${spec#\#has_external=}"
+    continue
+  fi
+  ACTIONS_FILTERED+=("$spec")
+done
+ACTIONS=("${ACTIONS_FILTERED[@]+"${ACTIONS_FILTERED[@]}"}")
+
+# DRM sysfs catches NVIDIA HDMI even if niri's output list races hotplug.
+if [[ "$has_external" -eq 0 ]] && sysfs_has_external; then
+  has_external=1
+  log "sysfs: external DRM connector connected (forcing docked GPU path)"
+fi
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  echo "NIRI_SOCKET=${NIRI_SOCKET:-}"
+  echo "lid_closed=${lid_closed}"
+  echo "has_external=${has_external}"
+  echo "render_now=$(current_render_target)"
+  echo "render_want=$([[ "$has_external" -eq 1 ]] && echo nvidia || echo intel)"
+  if [[ ${#ACTIONS[@]} -eq 0 ]]; then
+    echo "actions: (none, already desired state or no outputs)"
+  else
+    echo "actions:"
+    for spec in "${ACTIONS[@]}"; do
+      action="${spec%% *}"
+      name="${spec#* }"
+      echo "  niri msg output ${name} ${action}"
+    done
+  fi
+  exit 0
+fi
+
+# Prefer Intel render when only the laptop panel is used (smooth Quickshell dmabuf).
+# Prefer NVIDIA when an external display is present (dock / HDMI TV).
+# Absolute path: systemd user units often lack ~/.local/bin in PATH.
+want_mode="intel"
+want_render="$INTEL_RENDER"
+if [[ "$has_external" -eq 1 ]]; then
+  want_mode="nvidia"
+  want_render="$NVIDIA_RENDER"
+fi
+
+gpu_changed=0
+if [[ -x "$SET_GPU" ]]; then
+  now_render="$(current_render_target)"
+  if [[ "$now_render" != "$want_render" ]]; then
+    if "$SET_GPU" "$want_mode" >/dev/null 2>&1; then
+      log "render-gpu ${want_mode} (config updated; needs niri restart)"
+      gpu_changed=1
+    else
+      log "FAILED niri-set-render-gpu ${want_mode}"
+    fi
+  fi
+else
+  log "MISSING $SET_GPU (cannot switch render GPU)"
+fi
+
+if [[ ${#ACTIONS[@]} -gt 0 ]]; then
+  fail=0
+  for spec in "${ACTIONS[@]}"; do
+    action="${spec%% *}"
+    name="${spec#* }"
+    if [[ -z "$action" || -z "$name" || "$name" == "$action" ]]; then
+      continue
+    fi
+    if niri msg output "$name" "$action" >/dev/null 2>&1; then
+      log "output ${name} ${action}"
+    else
+      log "FAILED output ${name} ${action}"
+      fail=1
+    fi
+  done
+fi
+
+# Sync systemd user GPU client env with dock state (Thorium/Chromium/etc).
+sync_client_gpu_env() {
+  local mode="$1"
+  if [[ "$mode" == "nvidia" ]]; then
+    systemctl --user set-environment \
+      __NV_PRIME_RENDER_OFFLOAD=1 \
+      __VK_LAYER_NV_optimus=NVIDIA_only \
+      __GLX_VENDOR_LIBRARY_NAME=nvidia \
+      __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json \
+      VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json \
+      LIBVA_DRIVER_NAME=nvidia \
+      NVD_BACKEND=direct \
+      2>/dev/null || true
+    systemctl --user unset-environment MESA_LOADER_DRIVER_OVERRIDE GBM_BACKEND 2>/dev/null || true
+  else
+    systemctl --user set-environment \
+      __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json \
+      __GLX_VENDOR_LIBRARY_NAME=mesa \
+      LIBVA_DRIVER_NAME=iHD \
+      MESA_LOADER_DRIVER_OVERRIDE=iris \
+      2>/dev/null || true
+    systemctl --user unset-environment \
+      __NV_PRIME_RENDER_OFFLOAD __VK_LAYER_NV_optimus VK_ICD_FILENAMES \
+      GBM_BACKEND NVD_BACKEND \
+      2>/dev/null || true
+  fi
+}
+sync_client_gpu_env "$want_mode"
+
+# Keep Noctalia bar layout in sync after dock/undock (same logical 1920 on both).
+if [[ -x "${HOME}/.local/bin/noctalia-restore-wanted.sh" ]]; then
+  "${HOME}/.local/bin/noctalia-restore-wanted.sh" >/dev/null 2>&1 || true
+elif command -v noctalia >/dev/null 2>&1; then
+  noctalia msg config-reload >/dev/null 2>&1 || true
+fi
+
+
+# TV/dock on NVIDIA while niri still renders on Intel = PRIME copy of every
+# 4K frame → desktop freezes. Restart once when the render target flips.
+if [[ "$gpu_changed" -eq 1 || "$FORCE_REEXEC" -eq 1 ]]; then
+  if [[ "$(current_render_target)" == "$want_render" ]]; then
+    if command -v notify-send >/dev/null 2>&1; then
+      notify-send -u critical "Niri GPU" \
+        "Trocando para ${want_mode} e reiniciando o compositor (TV/dock 4K precisa da NVIDIA)." \
+        2>/dev/null || true
+    fi
+    schedule_niri_reexec
+    # Quit current compositor so the reexec unit can start niri.service.
+    niri msg action quit --skip-confirmation >/dev/null 2>&1 || true
+  fi
+fi
+
+trim_log
+exit 0

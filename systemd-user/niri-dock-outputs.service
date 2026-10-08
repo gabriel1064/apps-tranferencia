@@ -1,0 +1,11 @@
+[Unit]
+Description=Apply Niri dock output layout (eDP vs NVIDIA external)
+Documentation=file:///home/gabriel/.local/bin/niri-dock-outputs
+After=niri.service
+# Started on demand (udev / niri spawn / manual). No-op if Niri is not running.
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/niri-dock-outputs
+Nice=5
+SyslogIdentifier=niri-dock-outputs

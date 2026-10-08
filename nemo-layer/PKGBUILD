@@ -1,0 +1,66 @@
+# Maintainer: local rebuild — Wayland desktop via gtk-layer-shell
+# Based on Arch packaging for nemo; tracks linuxmint 6.7.8-unstable for layer-shell.
+
+pkgname=nemo
+pkgver=6.7.8
+pkgrel=1.1
+pkgdesc='File manager for Cinnamon — Wayland desktop (gtk-layer-shell)'
+arch=(x86_64)
+url='https://github.com/linuxmint/nemo'
+license=('GPL-3.0-or-later AND LGPL-2.1-or-later')
+depends=(
+  at-spi2-core
+  bash
+  cairo
+  cinnamon-desktop
+  dconf
+  exempi
+  libgcc
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  gtk-layer-shell
+  gvfs
+  hicolor-icon-theme
+  json-glib
+  libexif
+  libx11
+  libxmlb
+  pango
+  python
+  python-cairo
+  python-gobject
+  xapp
+)
+optdepends=(
+  'cinnamon-translations: i18n'
+  'ffmpegthumbnailer: support for video thumbnails'
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  gtk-doc
+  intltool
+  libgsf
+  meson
+)
+provides=(nemo)
+conflicts=(nemo)
+# Post-6.6.4: gtk-layer-shell Wayland desktop support.
+_commit=ed0bb24cedd880e3c3e25dbc410c7938fc295bde # 6.7.8-unstable
+source=("git+https://github.com/linuxmint/nemo.git#commit=${_commit}")
+b2sums=('SKIP')
+
+build() {
+  arch-meson $pkgname build \
+    --libexecdir=lib/$pkgname \
+    -D gtk_doc=false \
+    -D gtk_layer_shell=true
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}

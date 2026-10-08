@@ -1,0 +1,28 @@
+#!/bin/bash
+# Launch the niri window-chrome overlay with a Wayland Qt platform.
+# systemd --user does not inherit WAYLAND_DISPLAY / NIRI_SOCKET from niri.
+set -euo pipefail
+export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland}"
+runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+if [[ -z "${WAYLAND_DISPLAY:-}" ]]; then
+    if [[ -S "$runtime/wayland-1" ]]; then
+        export WAYLAND_DISPLAY=wayland-1
+    elif [[ -S "$runtime/wayland-0" ]]; then
+        export WAYLAND_DISPLAY=wayland-0
+    else
+        for sock in "$runtime"/wayland-*; do
+            [[ -S "$sock" ]] || continue
+            export WAYLAND_DISPLAY="$(basename "$sock")"
+            break
+        done
+    fi
+fi
+if [[ -z "${NIRI_SOCKET:-}" ]]; then
+    shopt -s nullglob
+    socks=("$runtime"/niri.wayland-*.sock)
+    shopt -u nullglob
+    if ((${#socks[@]})); then
+        export NIRI_SOCKET="${socks[0]}"
+    fi
+fi
+exec /home/gabriel/.local/bin/qs -n --path /home/gabriel/.config/quickshell/window-chrome

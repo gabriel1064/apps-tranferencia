@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Observa hotplug DRM (udev) e reaplica o layout dock do Niri.
+# Sai em silêncio se o Niri não estiver vivo (não interfere no Hyprland).
+set -u
+
+APPLY="${HOME}/.local/bin/niri-dock-outputs"
+
+niri_live() {
+  command -v niri >/dev/null 2>&1 || return 1
+  local sock uid
+  uid="$(id -u)"
+  if [[ -n "${NIRI_SOCKET:-}" && -S "${NIRI_SOCKET}" ]]; then
+    niri msg -j version >/dev/null 2>&1 && return 0
+  fi
+  shopt -s nullglob
+  local candidates=(/run/user/"${uid}"/niri*.sock)
+  shopt -u nullglob
+  local c
+  for c in "${candidates[@]}"; do
+    [[ -S "$c" ]] || continue
+    export NIRI_SOCKET="$c"
+    if niri msg -j version >/dev/null 2>&1; then
+      return 0
+    fi
+  done
+  unset NIRI_SOCKET
+  return 1
+}
+
+# niri.service / spawn-at-startup can race the IPC socket by a moment.
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  if niri_live; then
+    break
+  fi
+  sleep 1
+done
+
+if ! niri_live; then
+  exit 0
+fi
+
+if [[ ! -x "$APPLY" ]]; then
+  echo "niri-dock-watch: missing $APPLY" >&2
+  exit 1
+fi
+
+"$APPLY" || true
+
+udev_pid=""
+cleanup() {
+  if [[ -n "$udev_pid" ]]; then
+    kill "$udev_pid" 2>/dev/null || true
+    wait "$udev_pid" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT INT TERM
+
+if command -v udevadm >/dev/null 2>&1; then
+  (
+    udevadm monitor --udev --subsystem-match=drm 2>/dev/null |
+      while IFS= read -r _; do
+        while IFS= read -r -t 0.5 _; do
+          :
+        done
+        if niri_live; then
+          "$APPLY" || true
+        else
+          exit 0
+        fi
+      done
+  ) &
+  udev_pid=$!
+fi
+
+while sleep 2; do
+  if ! niri_live; then
+    exit 0
+  fi
+  "$APPLY" || true
+  if [[ -n "$udev_pid" ]] && ! kill -0 "$udev_pid" 2>/dev/null; then
+    udev_pid=""
+  fi
+done

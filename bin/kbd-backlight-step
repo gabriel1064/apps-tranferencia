@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# usage: kbd-backlight-step +| - | toggle
+# One physical Fn key can hit Niri AND the Uniwill watcher; flock + debounce
+# so a single press is a single 20% step. Then re-paint both ITE chips.
+set -euo pipefail
+
+LOCK="${XDG_CACHE_HOME:-$HOME/.cache}/waybar-niri/kbd-backlight-step.lock"
+STAMP="${XDG_CACHE_HOME:-$HOME/.cache}/waybar-niri/kbd-backlight-step.stamp"
+STATE="${XDG_CACHE_HOME:-$HOME/.cache}/waybar-niri/kbd-backlight-bri"
+PAINT="${HOME}/.local/bin/ite-kbd-paint.py"
+
+mkdir -p "$(dirname "$LOCK")"
+exec 9>"$LOCK"
+flock -n 9 || exit 0
+
+now_ms=$(date +%s%3N)
+last_ms=0
+if [[ -f "$STAMP" ]]; then
+    last_ms=$(cat "$STAMP" 2>/dev/null || echo 0)
+fi
+if [[ "${now_ms}" =~ ^[0-9]+$ && "${last_ms}" =~ ^[0-9]+$ ]]; then
+    if (( now_ms - last_ms < 280 )); then
+        exit 0
+    fi
+fi
+echo "$now_ms" > "$STAMP"
+
+mapfile -t ZONES < <(find /sys/class/leds -maxdepth 1 -name 'rgb:kbd_backlight*' | sort)
+[[ ${#ZONES[@]} -gt 0 ]] || exit 1
+max=$(cat "${ZONES[0]}/max_brightness")
+cur=$(cat "${ZONES[0]}/brightness")
+step=$(( max / 5 )); [[ $step -lt 1 ]] && step=1
+
+case "${1:-}" in
+  +|up)
+    if [[ "$cur" -le 0 ]]; then
+      new=$(cat "$STATE" 2>/dev/null || echo "$max")
+      [[ "$new" -lt 1 ]] && new=$step
+    else
+      new=$(( cur + step ))
+    fi
+    [[ $new -gt $max ]] && new=$max
+    ;;
+  -|down)
+    new=$(( cur - step ))
+    [[ $new -lt 0 ]] && new=0
+    if [[ $cur -gt 0 ]]; then
+      echo "$cur" > "$STATE"
+    fi
+    ;;
+  toggle)
+    if [[ $cur -gt 0 ]]; then
+      echo "$cur" > "$STATE"
+      new=0
+    else
+      new=$(cat "$STATE" 2>/dev/null || echo "$max")
+      [[ $new -lt 1 ]] && new=$max
+    fi
+    ;;
+  *) exit 2 ;;
+esac
+
+for z in "${ZONES[@]}"; do
+    echo "$new" > "$z/brightness" || true
+done
+echo "$new" > "$STATE"
+echo "$new"
+
+# Kernel writes rainbow (0x08) on sysfs; overwrite with solid static on both chips.
+python3 "$PAINT" --from-sysfs >/dev/null || true

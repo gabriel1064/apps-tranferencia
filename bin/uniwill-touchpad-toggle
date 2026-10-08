@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "$(date -Iseconds) argv=$* pwd=$PWD" >> /home/gabriel/.cache/waybar-niri/touchpad-toggle.log
+exec /usr/bin/python3 /home/gabriel/.local/bin/uniwill-touchpad-toggle.py "$@" >> /home/gabriel/.cache/waybar-niri/touchpad-toggle.log 2>&1

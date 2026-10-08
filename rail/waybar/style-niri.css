@@ -1,0 +1,356 @@
+/* Generated widths/colors. GTK requires @import before any rule.
+   Plain absolute path (no file:// scheme): waybar's import watcher does a
+   filesystem lookup on the captured URL, so a scheme would break live reload. */
+@import url("/home/gabriel/.cache/waybar-niri/widths.css");
+@import url("/home/gabriel/.cache/waybar-niri/px-ladder.css");
+
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "CaskaydiaCove Nerd Font", "CaskaydiaCove Nerd Font Propo", "Cascadia Mono NF", "Cascadia Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 0;
+}
+
+window#waybar,
+window#waybar.niri-apps {
+  background: transparent;
+  color: #e8eaed;
+}
+
+/* Rail is a layer-shell canvas (niri-rail.py). This slot only hosts the process. */
+#custom-niri-rail {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  opacity: 0;
+  font-size: 0;
+}
+
+/* Continuous rail: one glass block for apps + viewport underline. */
+#group-niri-top {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(18, 20, 24, 0.40)
+  );
+  background-color: rgba(18, 20, 24, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 3px 5px 4px;
+  margin: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+#group-niri-apps {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+#group-niri-strip {
+  background: transparent;
+  border: none;
+  /* Vertical room so the capsule tick can overhang the 4px bars equally. */
+  padding: 0;
+  margin: 2px 0 0 0;
+  min-height: 12px;
+}
+
+/* Base icon slot — no per-item pill; the group is the single rail.
+   Icons are centered in their proportional slot so narrow end columns stay aligned. */
+#custom-niri-app0,
+#custom-niri-app1,
+#custom-niri-app2,
+#custom-niri-app3,
+#custom-niri-app4,
+#custom-niri-app5,
+#custom-niri-app6,
+#custom-niri-app7,
+#custom-niri-app8,
+#custom-niri-app9 {
+  color: rgba(232, 234, 237, 0.92);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  min-height: 34px;
+  font-size: 22px;
+  font-weight: 500;
+  /* Never transition min-width: Waybar strips+reapplies classes on every JSON
+     line, so width tweens animate pxN→unset→pxN (flash/collapse) on scroll. */
+  transition-property: opacity, color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Invisible gap mirroring the strip tick footprint between columns. */
+#custom-niri-app0.col-gap,
+#custom-niri-app1.col-gap,
+#custom-niri-app2.col-gap,
+#custom-niri-app3.col-gap,
+#custom-niri-app4.col-gap,
+#custom-niri-app5.col-gap,
+#custom-niri-app6.col-gap,
+#custom-niri-app7.col-gap,
+#custom-niri-app8.col-gap,
+#custom-niri-app9.col-gap,
+.niri-app-item.col-gap {
+  background: transparent;
+  color: transparent;
+  border: none;
+  opacity: 0;
+  font-size: 1px;
+  min-height: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+.niri-app-item.narrow {
+  font-size: 16px;
+}
+
+.niri-app-item {
+  transition-property: opacity, color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.niri-app-item.in-viewport {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #f4f6f8;
+}
+
+.niri-app-item.in-viewport.focused {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.niri-app-item.in-viewport:hover {
+  background-color: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+/* Off-screen: square icon slot, dimmed. Width comes from widths.css. */
+.niri-app-item.off-screen {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  opacity: 0.4;
+  font-size: 20px;
+  color: rgba(232, 234, 237, 0.90);
+}
+
+.niri-app-item.off-screen:hover,
+.niri-app-item.off-screen.focused {
+  opacity: 0.72;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.niri-app-item.hidden {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+#custom-niri-app0.hidden,
+#custom-niri-app1.hidden,
+#custom-niri-app2.hidden,
+#custom-niri-app3.hidden,
+#custom-niri-app4.hidden,
+#custom-niri-app5.hidden,
+#custom-niri-app6.hidden,
+#custom-niri-app7.hidden,
+#custom-niri-app8.hidden,
+#custom-niri-app9.hidden {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Viewport underline.
+   Fill comes from widths.css: sticky #custom-niri-segN { background } (survives
+   Waybar class strip) + #id.groupN.shadeK for the live role. No blue fallback
+   here — it was winning over per-app hues via ID specificity. */
+#custom-niri-seg0,
+#custom-niri-seg1,
+#custom-niri-seg2,
+#custom-niri-seg3,
+#custom-niri-seg4,
+#custom-niri-seg5,
+#custom-niri-seg6,
+#custom-niri-seg7,
+#custom-niri-seg8,
+#custom-niri-seg9 {
+  color: transparent;
+  font-size: 1px;
+  min-height: 3px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  /* No min-width / background-color transitions — strip must not animate collapse. */
+  transition-property: none;
+}
+
+/* Center the 3px color bars in the 12px strip row (equal room above/below). */
+#custom-niri-seg0.in-viewport,
+#custom-niri-seg1.in-viewport,
+#custom-niri-seg2.in-viewport,
+#custom-niri-seg3.in-viewport,
+#custom-niri-seg4.in-viewport,
+#custom-niri-seg5.in-viewport,
+#custom-niri-seg6.in-viewport,
+#custom-niri-seg7.in-viewport,
+#custom-niri-seg8.in-viewport,
+#custom-niri-seg9.in-viewport,
+.niri-viewport-bar.in-viewport {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  min-height: 3px;
+}
+
+.niri-viewport-bar {
+  min-height: 3px;
+  transition-property: none;
+}
+
+.niri-viewport-bar.first,
+.seg.first {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+
+.niri-viewport-bar.last,
+.seg.last {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+/*
+ * Column break: white capsule between colors.
+ * Full 12px tall (no vertical margin) so it overhangs the centered 3px bars
+ * equally above and below; rounded tips.
+ */
+#custom-niri-seg0.col-tick,
+#custom-niri-seg1.col-tick,
+#custom-niri-seg2.col-tick,
+#custom-niri-seg3.col-tick,
+#custom-niri-seg4.col-tick,
+#custom-niri-seg5.col-tick,
+#custom-niri-seg6.col-tick,
+#custom-niri-seg7.col-tick,
+#custom-niri-seg8.col-tick,
+#custom-niri-seg9.col-tick,
+.niri-viewport-bar.col-tick,
+.seg.col-tick {
+  background: #ffffff;
+  color: transparent;
+  border: none;
+  border-radius: 999px;
+  box-shadow: none;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 0;
+  margin-bottom: 0;
+  min-height: 12px;
+  min-width: 2px;
+  padding: 0;
+  opacity: 1;
+}
+
+/* Vertical stack — bright cut (unchanged). */
+.niri-viewport-bar.sep-tile,
+.seg.sep-tile {
+  box-shadow:
+    inset -1px 0 0 0 rgba(6, 8, 12, 0.45),
+    inset -3px 0 0 0 rgba(255, 255, 255, 0.92);
+}
+
+.niri-viewport-bar.spacer,
+.seg.spacer {
+  background: transparent;
+  box-shadow: none;
+  min-height: 0;
+  border-radius: 0;
+  opacity: 0;
+}
+
+/* Off-screen / floating: same height as color bars, gray + low opacity. */
+#custom-niri-seg0.ghost,
+#custom-niri-seg1.ghost,
+#custom-niri-seg2.ghost,
+#custom-niri-seg3.ghost,
+#custom-niri-seg4.ghost,
+#custom-niri-seg5.ghost,
+#custom-niri-seg6.ghost,
+#custom-niri-seg7.ghost,
+#custom-niri-seg8.ghost,
+#custom-niri-seg9.ghost,
+.niri-viewport-bar.ghost,
+.seg.ghost {
+  background: rgba(160, 168, 180, 0.28);
+  box-shadow: none;
+  border: none;
+  border-radius: 999px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  min-height: 3px;
+  opacity: 1;
+}
+
+#custom-niri-seg0.hidden,
+#custom-niri-seg1.hidden,
+#custom-niri-seg2.hidden,
+#custom-niri-seg3.hidden,
+#custom-niri-seg4.hidden,
+#custom-niri-seg5.hidden,
+#custom-niri-seg6.hidden,
+#custom-niri-seg7.hidden,
+#custom-niri-seg8.hidden,
+#custom-niri-seg9.hidden {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  opacity: 0;
+}
+
+#custom-niri-watch {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  opacity: 0;
+}
+
+tooltip {
+  background: rgba(18, 20, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #e8eaed;
+}
+
+tooltip label {
+  color: #e8eaed;
+  padding: 4px 6px;
+}

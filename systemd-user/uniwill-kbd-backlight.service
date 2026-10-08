@@ -1,0 +1,11 @@
+[Unit]
+Description=Uniwill Fn kbd backlight + zone4 sync
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/bin/uniwill-kbd-backlight-watcher.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
